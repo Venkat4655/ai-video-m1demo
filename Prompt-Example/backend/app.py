@@ -5,7 +5,8 @@ from pathlib import Path
 
 from dotenv import load_dotenv
 from flask import Flask, jsonify, request, send_from_directory
-from openai import OpenAI, OpenAIError
+from openai import AuthenticationError, OpenAI, OpenAIError
+from werkzeug.exceptions import HTTPException
 
 BASE_DIR = Path(__file__).parent
 load_dotenv(BASE_DIR / ".env")
@@ -77,6 +78,15 @@ def ask_llm(api_key, facts, question):
     return response.choices[0].message.content
 
 
+@app.errorhandler(Exception)
+def handle_error(err):
+    """Always answer with JSON, so the chat shows a real message instead of 'couldn't reach the server'."""
+    if isinstance(err, HTTPException):
+        return jsonify(error=err.description), err.code
+    app.logger.exception("Unhandled error")
+    return jsonify(error=f"Unexpected server error ({type(err).__name__}). Check the backend log."), 500
+
+
 @app.get("/")
 def index():
     if not (DIST_DIR / "index.html").exists():
@@ -119,10 +129,13 @@ def chat():
 
     try:
         reply = ask_llm(api_key, facts, question)
-    except OpenAIError:
+    except OpenAIError as err:
         app.logger.exception("OpenAI request failed")
-        hood["note"] = "The request to OpenAI failed. See the backend log for details."
-        return jsonify(error="Sorry, I couldn't get an answer just now. Please try again.", under_the_hood=hood), 502
+        hood["note"] = f"The request to OpenAI failed ({type(err).__name__}). See the backend log for details."
+        message = "Sorry, I couldn't get an answer just now. Please try again."
+        if isinstance(err, AuthenticationError):
+            message = "OpenAI rejected the API key. Check that OPENAI_API_KEY is correct."
+        return jsonify(error=message, under_the_hood=hood), 502
 
     hood["sent_to_llm"] = True
     return jsonify(reply=reply or "Sorry, I don't have an answer for that.", under_the_hood=hood)

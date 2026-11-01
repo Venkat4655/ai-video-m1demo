@@ -204,13 +204,22 @@ export default function App() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ message: text }),
       })
-      const data = await response.json()
-      if (data.under_the_hood) setHood(data.under_the_hood)
-      answer = response.ok
-        ? { role: 'bot', text: data.reply }
-        : { role: 'error', text: data.error }
+      let data = null
+      try {
+        data = await response.json()
+      } catch {
+        // The server (or a proxy in front of it) sent something that isn't JSON.
+      }
+      if (!data) {
+        answer = { role: 'error', text: `The server sent an unexpected response (HTTP ${response.status}). Please try again.` }
+      } else {
+        if (data.under_the_hood) setHood(data.under_the_hood)
+        answer = response.ok
+          ? { role: 'bot', text: data.reply }
+          : { role: 'error', text: data.error }
+      }
     } catch {
-      answer = { role: 'error', text: "Couldn't reach the server. Is the backend running?" }
+      answer = { role: 'error', text: "Couldn't reach the server. Is the backend running? (On Colab: the session may have stopped. Re-run the last cell for a new link.)" }
     }
 
     setMessages((current) => {
