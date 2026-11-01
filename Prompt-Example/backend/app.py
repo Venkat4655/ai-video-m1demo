@@ -131,11 +131,14 @@ def chat():
         reply = ask_llm(api_key, facts, question)
     except OpenAIError as err:
         app.logger.exception("OpenAI request failed")
-        hood["note"] = f"The request to OpenAI failed ({type(err).__name__}). See the backend log for details."
-        message = "Sorry, I couldn't get an answer just now. Please try again."
+        detail = (getattr(err, "message", None) or str(err))[:200]
+        hood["note"] = f"The request to OpenAI failed ({type(err).__name__}): {detail}"
         if isinstance(err, AuthenticationError):
             message = "OpenAI rejected the API key. Check that OPENAI_API_KEY is correct."
-        return jsonify(error=message, under_the_hood=hood), 502
+        else:
+            message = f"OpenAI error ({type(err).__name__}): {detail}"
+        # Not 502/504: Cloudflare replaces those origin errors with its own HTML page, hiding this message.
+        return jsonify(error=message, under_the_hood=hood), 500
 
     hood["sent_to_llm"] = True
     return jsonify(reply=reply or "Sorry, I don't have an answer for that.", under_the_hood=hood)
