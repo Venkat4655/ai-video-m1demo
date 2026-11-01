@@ -1,0 +1,375 @@
+:root {
+  --bg: #f5f6f8;
+  --surface: #ffffff;
+  --border: #e2e5ea;
+  --text: #1c2430;
+  --muted: #667085;
+  --accent: #0f766e;
+  --accent-dark: #0b5c56;
+  --bot-bubble: #eef1f4;
+  --error-bg: #fdecea;
+  --error-text: #a12622;
+  --code-bg: #f8f9fa;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  line-height: 1.5;
+}
+
+.page {
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 24px 16px 40px;
+}
+
+.icon {
+  display: block;
+  width: 100%;
+  height: 100%;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+button {
+  border: 0;
+  border-radius: 8px;
+  font: inherit;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.chat,
+.hood {
+  background: var(--surface);
+  border: 1px solid var(--border);
+}
+
+.chat {
+  max-width: 420px;
+  margin: 0 auto;
+  overflow: hidden;
+  border-radius: 20px;
+  box-shadow: 0 8px 28px rgba(0, 0, 0, 0.1);
+}
+
+.chat-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 16px;
+  background: var(--accent);
+  color: #fff;
+}
+
+.chat-header-icon {
+  width: 34px;
+  height: 34px;
+  flex: none;
+}
+
+h1 {
+  margin: 0;
+  font-size: 1.15rem;
+  font-weight: 700;
+  line-height: 1.25;
+}
+
+.status {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  margin: 0;
+  font-size: 0.75rem;
+}
+
+.status-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #fff;
+}
+
+.minimize {
+  width: 28px;
+  height: 28px;
+  margin-left: auto;
+  padding: 3px;
+  background: none;
+  color: #fff;
+}
+
+.log {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  height: 420px;
+  max-height: 60vh;
+  padding: 16px 12px;
+  overflow-y: auto;
+}
+
+.message {
+  display: flex;
+  align-items: flex-end;
+  gap: 8px;
+}
+
+.message.user {
+  justify-content: flex-end;
+}
+
+.message-body {
+  min-width: 0;
+  max-width: 78%;
+}
+
+.avatar {
+  flex: none;
+  width: 32px;
+  height: 32px;
+  padding: 6px;
+  border-radius: 50%;
+  background: var(--accent);
+  color: #fff;
+}
+
+.avatar.user {
+  background: var(--accent-dark);
+}
+
+.bubble {
+  position: relative;
+  width: fit-content;
+  padding: 10px 14px;
+  border-radius: 14px;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+.bubble.bot {
+  background: var(--bot-bubble);
+}
+
+.bubble.user {
+  margin-left: auto;
+  background: var(--accent);
+  color: #fff;
+}
+
+.bubble.error {
+  background: var(--error-bg);
+  color: var(--error-text);
+}
+
+.bubble.typing {
+  color: var(--muted);
+}
+
+.bubble:has(.actions) {
+  padding-bottom: 26px;
+  min-width: 112px;
+}
+
+.actions {
+  position: absolute;
+  right: 8px;
+  bottom: -9px;
+  display: flex;
+  gap: 2px;
+  padding: 2px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+}
+
+.actions button {
+  width: 24px;
+  height: 24px;
+  padding: 4px;
+  background: none;
+  border-radius: 6px;
+  color: var(--muted);
+}
+
+.actions button:hover,
+.actions button.selected {
+  color: var(--accent);
+}
+
+.actions button.selected {
+  background: var(--bot-bubble);
+}
+
+.meta {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  margin: 4px 2px 0;
+  color: var(--muted);
+  font-size: 0.7rem;
+}
+
+.message.user .meta {
+  justify-content: flex-end;
+}
+
+.bubble:has(.actions) + .meta {
+  margin-top: 8px;
+}
+
+.ticks {
+  width: 14px;
+  height: 14px;
+}
+
+.ticks.answered {
+  color: var(--accent);
+}
+
+.composer {
+  padding: 10px 12px 8px;
+  border-top: 1px solid var(--border);
+}
+
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 10px;
+}
+
+.chip {
+  padding: 5px 12px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  color: var(--text);
+  font-size: 0.8rem;
+}
+
+.chip:hover:enabled {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+form {
+  display: flex;
+  align-items: center;
+  padding-right: 6px;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+}
+
+form:focus-within {
+  outline: 2px solid var(--accent);
+  outline-offset: -1px;
+}
+
+input {
+  flex: 1;
+  min-width: 0;
+  padding: 12px 14px;
+  border: 0;
+  background: none;
+  color: inherit;
+  font: inherit;
+  outline: none;
+}
+
+button[type='submit'] {
+  flex: none;
+  width: 36px;
+  height: 36px;
+  padding: 7px;
+  background: none;
+  color: var(--accent);
+}
+
+button[type='submit']:hover:enabled {
+  color: var(--accent-dark);
+}
+
+.counter {
+  margin: 4px 2px 0;
+  color: var(--muted);
+  font-size: 0.75rem;
+  text-align: right;
+}
+
+.hood {
+  margin-top: 16px;
+  padding: 12px 16px;
+  border-radius: 12px;
+}
+
+.hood-toggle {
+  padding: 2px 0;
+  background: none;
+  color: var(--accent);
+}
+
+.hood-toggle:hover {
+  color: var(--accent-dark);
+  text-decoration: underline;
+}
+
+.hood-empty,
+.hood-status {
+  margin: 10px 0 0;
+  font-size: 0.9rem;
+}
+
+.hood-empty,
+.hood-status.not-sent {
+  color: var(--muted);
+}
+
+.hood-status.sent {
+  color: var(--accent);
+  font-weight: 500;
+}
+
+.hood-section {
+  margin-top: 14px;
+}
+
+.hood-section h3 {
+  margin: 0 0 4px;
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
+.hood-section h3 span {
+  color: var(--muted);
+  font-weight: 400;
+}
+
+.hood-section pre {
+  margin: 0;
+  padding: 10px 12px;
+  overflow: auto;
+  background: var(--code-bg);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  font-family: ui-monospace, Consolas, Menlo, monospace;
+  font-size: 0.8rem;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
