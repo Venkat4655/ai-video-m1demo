@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
+import { IS_STATIC, chat, getApiKey, setApiKey } from './chatApi.js'
 
 const MAX_LENGTH = 500
 const WELCOME =
@@ -102,6 +103,54 @@ function UnderTheHood({ hood }) {
   )
 }
 
+function ApiKeyBar() {
+  const [saved, setSaved] = useState(Boolean(getApiKey()))
+  const [value, setValue] = useState('')
+
+  function save(event) {
+    event.preventDefault()
+    const key = value.trim()
+    if (!key) return
+    setApiKey(key)
+    setValue('')
+    setSaved(true)
+  }
+
+  function clear() {
+    setApiKey('')
+    setSaved(false)
+  }
+
+  return (
+    <div className="keybar">
+      {saved ? (
+        <p>
+          OpenAI key saved in this browser.{' '}
+          <button type="button" className="link" onClick={clear}>
+            Remove key
+          </button>
+        </p>
+      ) : (
+        <form onSubmit={save}>
+          <label htmlFor="openai-key">OpenAI API key</label>
+          <input
+            id="openai-key"
+            type="password"
+            autoComplete="off"
+            value={value}
+            onChange={(event) => setValue(event.target.value)}
+            placeholder="sk-..."
+          />
+          <button type="submit" disabled={!value.trim()}>
+            Save
+          </button>
+        </form>
+      )}
+      <p className="keybar-note">Stored only in this browser and sent only to api.openai.com.</p>
+    </div>
+  )
+}
+
 function MessageActions({ text }) {
   const [copied, setCopied] = useState(false)
   const [feedback, setFeedback] = useState(null)
@@ -199,25 +248,11 @@ export default function App() {
 
     let answer
     try {
-      const response = await fetch('/api/chat', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ message: text }),
-      })
-      let data = null
-      try {
-        data = await response.json()
-      } catch {
-        // The server (or a proxy in front of it) sent something that isn't JSON.
-      }
-      if (!data) {
-        answer = { role: 'error', text: `The server sent an unexpected response (HTTP ${response.status}). Please try again.` }
-      } else {
-        if (data.under_the_hood) setHood(data.under_the_hood)
-        answer = response.ok
-          ? { role: 'bot', text: data.reply }
-          : { role: 'error', text: data.error }
-      }
+      const data = await chat(text)
+      if (data.under_the_hood) setHood(data.under_the_hood)
+      answer = data.ok
+        ? { role: 'bot', text: data.reply }
+        : { role: 'error', text: data.error }
     } catch {
       answer = { role: 'error', text: "Couldn't reach the server. Is the backend running? (On Colab: the session may have stopped. Re-run the last cell for a new link.)" }
     }
@@ -239,6 +274,7 @@ export default function App() {
 
   return (
     <main className="page">
+      {IS_STATIC && <ApiKeyBar />}
       <div className="chat">
         <header className="chat-header">
           <span className="chat-header-icon">

@@ -10,6 +10,7 @@
   --error-bg: #fdecea;
   --error-text: #a12622;
   --code-bg: #f8f9fa;
+  --on-accent: #ffffff;
 }
 
 * {
@@ -372,4 +373,58 @@ button[type='submit']:hover:enabled {
   font-size: 0.8rem;
   white-space: pre-wrap;
   overflow-wrap: anywhere;
+}
+
+.keybar {
+  margin-bottom: 16px;
+  padding: 12px 14px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  font-size: 14px;
+}
+
+.keybar p {
+  margin: 0;
+}
+
+.keybar form {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+}
+
+.keybar label {
+  font-weight: 600;
+}
+
+.keybar input {
+  flex: 1 1 180px;
+  min-width: 0;
+  padding: 8px 10px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--bg);
+  color: var(--text);
+  font: inherit;
+}
+
+.keybar form button {
+  padding: 8px 14px;
+  background: var(--accent);
+  color: var(--on-accent);
+}
+
+.keybar .link {
+  padding: 0;
+  background: none;
+  color: var(--accent);
+  text-decoration: underline;
+}
+
+.keybar-note {
+  margin-top: 6px !important;
+  color: var(--muted);
+  font-size: 12px;
 }
